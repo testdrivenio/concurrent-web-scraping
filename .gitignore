@@ -1,0 +1,10 @@
+.editorconfig
+.env
+env
+venv
+__pycache__
+*.pyc
+.DS_Store
+output_*
+.pytest*
+.vscode
