@@ -64,7 +64,7 @@ def parse_html(html):
             "load_time": load_time,
             "rank": tr.span.string,
             "score": score,
-            "title": tr.find(class_="storylink").string,
+            "title": tr.find(class_="titlelink").string,
             "url": article_url,
         }
         # appends article_info to output_list
