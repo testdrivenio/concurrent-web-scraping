@@ -7,12 +7,12 @@ from time import sleep, time
 from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 
 
-def run_process(page_number, filename, headless):
+def run_process(filename, headless):
 
     # init browser
     browser = get_driver(headless)
 
-    if connect_to_base(browser, page_number):
+    if connect_to_base(browser):
         sleep(2)
         html = browser.page_source
         output_list = parse_html(html)
@@ -21,7 +21,7 @@ def run_process(page_number, filename, headless):
         # exit
         browser.quit()
     else:
-        print("Error connecting to hackernews")
+        print("Error connecting to Wikipedia")
         browser.quit()
 
 
@@ -41,7 +41,7 @@ async def run_blocking_tasks(executor):
 
     # scrape and crawl
     blocking_tasks = [
-        loop.run_in_executor(executor, run_process, i, output_filename, headless)
+        loop.run_in_executor(executor, run_process, output_filename, headless)
         for i in range(1, 21)
     ]
     completed, pending = await asyncio.wait(blocking_tasks)

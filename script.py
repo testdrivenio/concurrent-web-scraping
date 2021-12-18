@@ -5,14 +5,14 @@ from time import sleep, time
 from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 
 
-def run_process(page_number, filename, browser):
-    if connect_to_base(browser, page_number):
+def run_process(filename, browser):
+    if connect_to_base(browser):
         sleep(2)
         html = browser.page_source
         output_list = parse_html(html)
         write_to_file(output_list, filename)
     else:
-        print("Error connecting to hacker news")
+        print("Error connecting to Wikipedia")
 
 
 if __name__ == "__main__":
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     # set variables
     start_time = time()
-    current_page = 1
+    current_attempt = 1
     output_timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     output_filename = f"output_{output_timestamp}.csv"
 
@@ -34,10 +34,10 @@ if __name__ == "__main__":
     browser = get_driver(headless=headless)
 
     # scrape and crawl
-    while current_page <= 20:
-        print(f"Scraping page #{current_page}...")
-        run_process(current_page, output_filename, browser)
-        current_page = current_page + 1
+    while current_attempt <= 20:
+        print(f"Scraping Wikipedia #{current_attempt} time(s)...")
+        run_process(output_filename, browser)
+        current_attempt = current_attempt + 1
 
     # exit
     browser.quit()
