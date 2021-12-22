@@ -7,7 +7,7 @@ from time import sleep, time
 from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 
 
-def run_process(filename, headless):
+def run_process(number, filename, headless):
 
     # init browser
     browser = get_driver(headless)
@@ -39,9 +39,9 @@ if __name__ == "__main__":
     output_timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
     output_filename = f"output_{output_timestamp}.csv"
 
-    # scrape and craw
+    # scrape and crawl
     with Pool(cpu_count() - 1) as p:
-        p.starmap(run_process, repeat(output_filename), repeat(headless)))
+        p.starmap(run_process, zip(range(1, 21), repeat(output_filename), repeat(headless)))
     p.close()
     p.join()
 

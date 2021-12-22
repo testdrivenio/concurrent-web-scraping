@@ -6,7 +6,7 @@ from time import sleep, time
 from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 
 
-def run_process(filename, headless):
+def run_process(number, filename, headless):
 
     # init browser
     browser = get_driver(headless)
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     with ProcessPoolExecutor() as executor:
         for number in range(1, 21):
             futures.append(
-                executor.submit(run_process, output_filename, headless)
+                executor.submit(run_process, number, output_filename, headless)
             )
 
     wait(futures)
