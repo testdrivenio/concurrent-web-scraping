@@ -20,16 +20,16 @@ def get_driver(headless):
     return driver
 
 
-def connect_to_base(browser, page_number):
-    base_url = f"https://news.ycombinator.com/news?p={page_number}"
+def connect_to_base(browser):
+    base_url = "https://en.wikipedia.org/wiki/Special:Random"
     connection_attempts = 0
     while connection_attempts < 3:
         try:
             browser.get(base_url)
-            # wait for table element with id = 'hnmain' to load
+            # wait for table element with id = 'content' to load
             # before returning True
             WebDriverWait(browser, 5).until(
-                EC.presence_of_element_located((By.ID, "hnmain"))
+                EC.presence_of_element_located((By.ID, "content"))
             )
             return True
         except Exception as e:
@@ -44,32 +44,16 @@ def parse_html(html):
     # create soup object
     soup = BeautifulSoup(html, "html.parser")
     output_list = []
-    # parse soup object to get article id, rank, score, and title
-    tr_blocks = soup.find_all("tr", class_="athing")
-    article = 0
-    for tr in tr_blocks:
-        article_id = tr.get("id")
-        article_url = tr.find_all("a")[1]["href"]
-        # check if article is a hacker news article
-        if "item?id=" in article_url:
-            article_url = f"https://news.ycombinator.com/{article_url}"
-        load_time = get_load_time(article_url)
-        try:
-            score = soup.find(id=f"score_{article_id}").string
-        except Exception as e:
-            print(e)
-            score = "0 points"
-        article_info = {
-            "id": article_id,
-            "load_time": load_time,
-            "rank": tr.span.string,
-            "score": score,
-            "title": tr.find(class_="titlelink").string,
-            "url": article_url,
-        }
-        # appends article_info to output_list
-        output_list.append(article_info)
-        article += 1
+    # parse soup object to get wikipedia article url, title, and last modified date
+    article_url = soup.find("link", {"rel": "canonical"})["href"]
+    article_title = soup.find("h1", {"id": "firstHeading"}).text
+    article_last_modified = soup.find("li", {"id": "footer-info-lastmod"}).text
+    article_info = {
+        "url": article_url,
+        "title": article_title,
+        "last_modified": article_last_modified,
+    }
+    output_list.append(article_info)
     return output_list
 
 
@@ -94,6 +78,6 @@ def get_load_time(article_url):
 def write_to_file(output_list, filename):
     for row in output_list:
         with open(Path(BASE_DIR).joinpath(filename), "a") as csvfile:
-            fieldnames = ["id", "load_time", "rank", "score", "title", "url"]
+            fieldnames = ["url", "title", "last_modified"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writerow(row)

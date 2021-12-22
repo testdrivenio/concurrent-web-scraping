@@ -6,12 +6,12 @@ from time import sleep, time
 from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 
 
-def run_process(page_number, filename, headless):
+def run_process(filename, headless):
 
     # init browser
     browser = get_driver(headless)
 
-    if connect_to_base(browser, page_number):
+    if connect_to_base(browser):
         sleep(2)
         html = browser.page_source
         output_list = parse_html(html)
@@ -20,7 +20,7 @@ def run_process(page_number, filename, headless):
         # exit
         browser.quit()
     else:
-        print("Error connecting to hackernews")
+        print("Error connecting to Wikipedia")
         browser.quit()
 
 
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     with ProcessPoolExecutor() as executor:
         for number in range(1, 21):
             futures.append(
-                executor.submit(run_process, number, output_filename, headless)
+                executor.submit(run_process, output_filename, headless)
             )
 
     wait(futures)

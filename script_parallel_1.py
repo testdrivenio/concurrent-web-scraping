@@ -7,12 +7,12 @@ from time import sleep, time
 from scrapers.scraper import connect_to_base, get_driver, parse_html, write_to_file
 
 
-def run_process(page_number, filename, headless):
+def run_process(filename, headless):
 
     # init browser
     browser = get_driver(headless)
 
-    if connect_to_base(browser, page_number):
+    if connect_to_base(browser):
         sleep(2)
         html = browser.page_source
         output_list = parse_html(html)
@@ -21,7 +21,7 @@ def run_process(page_number, filename, headless):
         # exit
         browser.quit()
     else:
-        print("Error connecting to hackernews")
+        print("Error connecting to Wikipedia")
         browser.quit()
 
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     # scrape and craw
     with Pool(cpu_count() - 1) as p:
-        p.starmap(run_process, zip(range(1, 21), repeat(output_filename), repeat(headless)))
+        p.starmap(run_process, repeat(output_filename), repeat(headless)))
     p.close()
     p.join()
 
